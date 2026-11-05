@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Türkiye Bilgi Yarışması</title>
+<meta name="description" content="Arkadaşlarınla, sınıfla, ailecek canlı bilgi yarışması. Bir ekran sunucu olur, herkes telefonundan katılır. Her sorudan sonra yapay zekâların o soruyu bilip bilmediğini görürsünüz.">
+<meta property="og:title" content="Türkiye'yi kim daha iyi tanıyor?">
+<meta property="og:description" content="Canlı bilgi yarışması: sen, arkadaşların ve yapay zekâ. Sorular Wikidata'dan, cevaplar doğrulanmış.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%23e4572e%22/%3E%3Ctext x=%2216%22 y=%2223%22 font-size=%2219%22 font-family=%22Arial%22 font-weight=%22900%22 text-anchor=%22middle%22 fill=%22%23fff%22%3E?%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{--zemin:#fff7ec;--kart:#fff;--yazi:#1d1a2e;--soluk:#6c6680;--cizgi:#eadfcf;--ana:#e4572e;--s0:#e4572e;--s1:#2e86de;--s2:#e8a317;--s3:#2e9e5b;--iyi:#2e9e5b;--kotu:#c0392b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--zemin:#15131f;--kart:#211e30;--yazi:#f4f0ff;--soluk:#a49fb8;--cizgi:#34304a}}
+:root[data-theme="dark"]{--zemin:#15131f;--kart:#211e30;--yazi:#f4f0ff;--soluk:#a49fb8;--cizgi:#34304a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--zemin);color:var(--yazi);font:17px/1.5 "Bricolage Grotesque",system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+button,input{font:inherit}
+a{color:var(--ana)}
+button{cursor:pointer;border:0;border-radius:14px;font-weight:700;min-height:48px;padding:0 22px;background:var(--yazi);color:var(--zemin)}
+button.ikincil{background:none;color:var(--yazi);border:2px solid var(--yazi)}
+button:disabled{opacity:.45;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--s2);outline-offset:3px}
+input{border:2px solid var(--cizgi);background:var(--kart);color:var(--yazi);border-radius:14px;min-height:52px;padding:0 16px;width:100%}
+.hata{color:var(--kotu);font-weight:700;min-height:1.5em;margin:8px 0 0}
+.soluk{color:var(--soluk)}
+/* giriş */
+.giris{padding-top:56px;padding-bottom:40px}
+.giris h1{font-weight:800;font-size:clamp(2.6rem,8vw,5rem);line-height:.95;letter-spacing:-.03em;margin:0}
+.giris h1 em{font-style:normal;color:var(--ana)}
+.giris .lede{font-size:1.15rem;color:var(--soluk);max-width:54ch;margin:18px 0 0}
+.iki{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:34px 0 0}
+.kutu{background:var(--kart);border:2px solid var(--cizgi);border-radius:20px;padding:22px}
+.kutu h2{margin:0 0 6px;font-size:1.4rem}
+.kutu p{margin:0 0 14px;color:var(--soluk)}
+.kutu form{display:grid;gap:10px}
+#kod{text-transform:uppercase;letter-spacing:.3em;font-weight:800;font-size:1.4rem}
+.nasil{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:46px 0 0}
+.nasil b{display:block;font-size:1.05rem}
+.nasil span{color:var(--soluk);font-size:.95rem}
+footer{padding-top:46px;padding-bottom:36px;color:var(--soluk);font-size:.88rem}
+footer a{color:inherit}
+/* oyun */
+.ust{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:18px;padding-bottom:18px;font-weight:700;color:var(--soluk)}
+.kodkutu{text-align:center;padding:30px 0}
+.kodkutu .kod{font-size:clamp(4rem,16vw,9rem);font-weight:800;letter-spacing:.12em;line-height:1;color:var(--ana)}
+.kodkutu .adres{font-size:clamp(1rem,2.4vw,1.4rem);margin-top:8px}
+.isimler{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:26px 0;min-height:60px}
+.isimler span{background:var(--kart);border:2px solid var(--cizgi);border-radius:99px;padding:8px 16px;font-weight:700;animation:gel .3s ease-out}
+@keyframes gel{from{transform:scale(.6);opacity:0}}
+.merkez{text-align:center}
+.soru{font-size:clamp(1.6rem,4.4vw,3rem);font-weight:800;line-height:1.12;letter-spacing:-.02em;text-align:center;margin:10px auto 22px;max-width:22ch}
+.kat{display:inline-block;background:var(--yazi);color:var(--zemin);border-radius:99px;padding:4px 14px;font-size:.85rem;font-weight:700}
+.sure{height:12px;background:var(--cizgi);border-radius:99px;overflow:hidden;margin:0 0 22px}
+.sure i{display:block;height:100%;background:var(--ana);transform-origin:left;transition:transform .25s linear}
+.secenekler{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.secenek{position:relative;display:flex;align-items:center;gap:14px;min-height:96px;border-radius:18px;padding:16px 20px;color:#fff;font-size:clamp(1.15rem,2.6vw,1.7rem);font-weight:800;text-align:left;width:100%}
+.secenek .h{flex:0 0 42px;height:42px;border-radius:12px;background:rgba(255,255,255,.25);display:grid;place-items:center;font-size:1.2rem}
+.secenek .n{margin-left:auto;font-size:1.4rem;background:rgba(0,0,0,.2);border-radius:10px;padding:2px 12px}
+.s0{background:var(--s0)}.s1{background:var(--s1)}.s2{background:var(--s2)}.s3{background:var(--s3)}
+.sonucta .secenek{opacity:.35}.sonucta .secenek.dogru{opacity:1;box-shadow:0 0 0 5px var(--yazi)}
+.sonucta .secenek.dogru .h::after{content:"✓"}.sonucta .secenek.dogru .h span{display:none}
+.alt{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;margin:22px 0}
+.yz{background:var(--kart);border:2px solid var(--cizgi);border-radius:18px;padding:16px 18px}
+.yz h3,.tablo h3{margin:0 0 8px;font-size:1rem;color:var(--soluk)}
+.yz .buyuk{font-size:1.3rem;font-weight:800}
+.yz ul{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-wrap:wrap;gap:6px}
+.yz li{border-radius:99px;padding:3px 12px;font-weight:700;font-size:.9rem;background:color-mix(in srgb,var(--kotu) 15%,transparent);color:var(--kotu)}
+.yz li.b{background:color-mix(in srgb,var(--iyi) 15%,transparent);color:var(--iyi)}
+.tablo{background:var(--kart);border:2px solid var(--cizgi);border-radius:18px;padding:16px 18px}
+.tablo ol{margin:0;padding:0;list-style:none;counter-reset:s}
+.tablo li{display:flex;gap:10px;padding:6px 0;border-top:1px solid var(--cizgi);counter-increment:s;font-weight:700}
+.tablo li::before{content:counter(s);width:1.6em;color:var(--soluk)}
+.tablo li b{margin-left:auto}
+.tablo li small{color:var(--iyi);font-weight:700;margin-left:6px}
+.ileri{display:flex;justify-content:flex-end;gap:10px;margin:0 0 30px}
+.kursu{display:flex;justify-content:center;align-items:flex-end;gap:14px;margin:30px 0}
+.kursu div{width:min(30vw,200px);text-align:center;font-weight:800}
+.kursu i{display:block;border-radius:14px 14px 0 0;background:var(--ana);color:#fff;font-style:normal;font-size:2rem;padding-top:12px;margin-top:8px}
+/* oyuncu */
+.oyuncu .secenekler{grid-template-columns:1fr;gap:12px}
+.oyuncu .secenek{min-height:84px}
+.mesaj{text-align:center;padding-top:40px;padding-bottom:40px}
+.mesaj .buyuk{font-size:clamp(2.4rem,10vw,4rem);font-weight:800;line-height:1.05}
+.iyi{color:var(--iyi)}.kotu{color:var(--kotu)}
+@media (max-width:720px){.iki,.nasil,.alt{grid-template-columns:1fr}.secenekler{grid-template-columns:1fr}.secenek{min-height:72px}}
+</style>
+</head>
+<body>
+<div id="uygulama"></div>
+<script>
+"use strict";
+const API = location.hostname === "127.0.0.1" ? "http://127.0.0.1:8792" : "https://51-20-66-93.sslip.io/yarisma";
+const SITE = location.origin + location.pathname;
+const HARF = ["A", "B", "C", "D"];
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const ss = {al: (k) => { try { return sessionStorage.getItem(k); } catch (e) { return null; } }, koy: (k, v) => { try { sessionStorage.setItem(k, v); } catch (e) {} }};
+let akis = null, V = null, rol = null, kod = null, jeton = null, bitis = 0, saatId = null;
+
+async function post(yol, govde) {
+  const r = await fetch(API + yol, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(govde || {})});
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.hata || "Bir sorun oldu.");
+  return j;
+}
+
+function giris(hata) {
+  kapat();
+  const q = new URLSearchParams(location.search).get("k") || "";
+  $("#uygulama").innerHTML = `<div class="wrap giris">
+    <h1>Türkiye'yi kim<br>daha iyi <em>tanıyor?</em></h1>
+    <p class="lede">Arkadaşlarınla, sınıfla, ailecek. Bir ekran sunucu olur, herkes telefonundan katılır. On soru; her sorudan sonra yapay zekâların o soruyu bilip bilmediğini de görürsünüz.</p>
+    <div class="iki">
+      <div class="kutu"><h2>Oyuna katıl</h2><p>Sunucu ekranındaki dört harfli kodu yaz.</p>
+        <form id="katil"><input id="kod" maxlength="4" autocomplete="off" placeholder="KOD" value="${esc(q.toUpperCase())}" aria-label="Oda kodu">
+        <input id="ad" maxlength="16" autocomplete="nickname" placeholder="Adın" aria-label="Adın"><button>Katıl</button></form><p class="hata" id="h1">${esc(hata || "")}</p></div>
+      <div class="kutu"><h2>Oda kur</h2><p>Bu ekranı herkesin görebileceği bir yere koy: projeksiyon, televizyon ya da bilgisayar.</p>
+        <button class="ikincil" id="kur">Yeni oda kur</button><p class="hata" id="h2"></p></div>
+    </div>
+    <div class="nasil">
+      <div><b>Sorular gerçek veriden</b><span>İl nüfusları, ilçeler, plakalar, rakımlar, göller, doğum yılları. Wikidata'dan üretildi, tartışmalı olanlar ayıklandı.</span></div>
+      <div><b>Hızlı olan kazanır</b><span>Doğru cevap 500 puan, ne kadar hızlıysan 500'e kadar fazlası. Her soru için 20 saniye.</span></div>
+      <div><b>Yapay zekâ da yarışıyor</b><span>Her sorudan sonra on modelin o soruyu bilip bilmediği görünür. Ölçümler <a href="https://birtohum.github.io/turkce-yz-karnesi/">Türkçe yapay zekâ karnesi</a>nden.</span></div>
+    </div></div>
+    <footer class="wrap">Adlar ve puanlar yalnız oyun sürerken sunucunun belleğinde durur, hiçbir yere kaydedilmez. Kod: <a href="https://github.com/birtohum/bilgi-yarismasi">github.com/birtohum/bilgi-yarismasi</a> · <a href="https://birtohum.github.io/">birtohum</a></footer>`;
+  $("#katil").onsubmit = async (e) => {
+    e.preventDefault();
+    const k = $("#kod").value.trim().toUpperCase(), ad = $("#ad").value.trim();
+    if (k.length !== 4) return ($("#h1").textContent = "Kod dört harf.");
+    if (!ad) return ($("#h1").textContent = "Bir ad yaz.");
+    try { const j = await post(`/oda/${k}/katil`, {ad}); ss.koy("j:" + k, j.jeton); location.hash = "#oyna/" + k; }
+    catch (err) { $("#h1").textContent = err.message === "Failed to fetch" ? "Sunucuya ulaşılamadı." : err.message; }
+  };
+  $("#kur").onclick = async () => {
+    $("#kur").disabled = true;
+    try { const j = await post("/oda"); ss.koy("s:" + j.kod, j.jeton); location.hash = "#sun/" + j.kod; }
+    catch (err) { $("#h2").textContent = err.message === "Failed to fetch" ? "Sunucuya ulaşılamadı." : err.message; $("#kur").disabled = false; }
+  };
+}
+
+function kapat() { if (akis) akis.close(); akis = null; clearInterval(saatId); }
+
+function baglan() {
+  kapat();
+  akis = new EventSource(`${API}/oda/${kod}/akis?j=${encodeURIComponent(jeton || "")}`);
+  akis.onmessage = (e) => { V = JSON.parse(e.data); if (V.durum === "soru") bitis = performance.now() + V.kalan * 1000; ciz(); };
+  akis.onerror = async () => {
+    const o = await fetch(`${API}/oda/${kod}`).then((x) => x.status).catch(() => 0);
+    if (o === 404) { kapat(); history.replaceState(null, "", SITE); giris("Bu oda artık yok."); }
+  };
+  saatId = setInterval(sayac, 200);
+}
+
+function sayac() {
+  if (!V || V.durum !== "soru") return;
+  const kalan = Math.max(0, (bitis - performance.now()) / 1000), b = $(".sure i"), t = $("#kalan");
+  if (b) b.style.transform = `scaleX(${kalan / 20})`;
+  if (t) t.textContent = Math.ceil(kalan);
+}
+
+function secenekler(s, opt = {}) {
+  return `<div class="secenekler">${s.secenekler.map((o, i) => `<button class="secenek s${i}${opt.dogru === i ? " dogru" : ""}" data-i="${i}" ${opt.pasif ? "disabled" : ""}>
+    <span class="h"><span>${HARF[i]}</span></span><span>${esc(o)}</span>${opt.dagilim ? `<span class="n">${opt.dagilim[i]}</span>` : ""}</button>`).join("")}</div>`;
+}
+
+function yzKutu(y) {
+  return `<div class="yz"><h3>Yapay zekâ bu soruyu bildi mi?</h3>
+    <div class="buyuk">Meta'nın büyük modelleri: ${y.meta_bildi}/${y.meta_toplam}</div>
+    <ul>${y.yerel.map((m) => `<li class="${m.bildi ? "b" : ""}">${m.bildi ? "✓" : "✗"} ${esc(m.ad)}</li>`).join("")}</ul>
+    <p class="soluk" style="margin:8px 0 0;font-size:.85rem">Bilgisayarda çalışan küçük açık modeller; ölçüm <a href="https://birtohum.github.io/turkce-yz-karnesi/" style="color:inherit">karneden</a>.</p></div>`;
+}
+
+function tablo(t, baslik = "Puan tablosu") {
+  return `<div class="tablo"><h3>${baslik}</h3><ol>${t.map((o) => `<li>${esc(o.ad)}<b>${o.puan.toLocaleString("tr-TR")}${o.son ? `<small>+${o.son}</small>` : ""}</b></li>`).join("")}</ol></div>`;
+}
+
+function ciz() { rol === "sun" ? sunucuCiz() : oyuncuCiz(); }
+
+function sunucuCiz() {
+  const v = V, u = $("#uygulama");
+  const ust = `<div class="wrap ust"><span>Kod: <b style="color:var(--ana)">${v.kod}</b></span><span>${v.durum === "lobi" ? `${v.oyuncu_sayisi} oyuncu` : v.durum === "bitti" ? "Bitti" : `Soru ${v.sira}/${v.toplam}`}</span></div>`;
+  if (v.durum === "lobi") {
+    u.innerHTML = ust + `<div class="wrap"><div class="kodkutu"><div class="soluk">Telefonundan katıl</div><div class="kod">${v.kod}</div>
+      <div class="adres">${esc(SITE.replace(/^https?:\/\//, ""))} adresine gir, bu kodu yaz</div></div>
+      <div class="isimler">${v.oyuncular.length ? v.oyuncular.map((a) => `<span>${esc(a)}</span>`).join("") : `<span class="soluk" style="border-style:dashed">Oyuncular bekleniyor…</span>`}</div>
+      <div class="merkez"><button id="ilerle" ${v.oyuncular.length ? "" : "disabled"}>Yarışmayı başlat</button></div></div>`;
+  } else if (v.durum === "soru") {
+    u.innerHTML = ust + `<div class="wrap"><div class="merkez"><span class="kat">${esc(v.soru.kategori)}</span></div><div class="soru">${esc(v.soru.metin)}</div>
+      <div class="sure"><i></i></div>${secenekler(v.soru, {pasif: true})}
+      <div class="ust"><span><b id="kalan"></b> saniye</span><span>${v.cevaplayan}/${v.oyuncu_sayisi} cevap verdi</span></div>
+      <div class="ileri"><button class="ikincil" id="ilerle">Cevapları kapat</button></div></div>`;
+    sayac();
+  } else if (v.durum === "sonuc") {
+    u.innerHTML = ust + `<div class="wrap sonucta"><div class="merkez"><span class="kat">${esc(v.soru.kategori)}</span></div><div class="soru">${esc(v.soru.metin)}</div>
+      ${secenekler(v.soru, {pasif: true, dogru: v.dogru, dagilim: v.dagilim})}
+      <div class="alt">${yzKutu(v.yz)}${tablo(v.tablo)}</div>
+      <div class="ileri"><button id="ilerle">${v.sira >= v.toplam ? "Sonuçları göster" : "Sonraki soru"}</button></div></div>`;
+  } else if (v.durum === "bitti") {
+    const t = v.tablo, k = [t[1], t[0], t[2]];
+    u.innerHTML = ust + `<div class="wrap"><div class="soru">Kazanan: ${esc(t[0] ? t[0].ad : "—")}</div>
+      <div class="kursu">${k.map((o, i) => o ? `<div>${esc(o.ad)}<br><span class="soluk">${o.puan.toLocaleString("tr-TR")}</span><i style="height:${[120, 170, 90][i]}px">${[2, 1, 3][i]}</i></div>` : "<div></div>").join("")}</div>
+      <div class="alt" style="grid-template-columns:1fr">${tablo(t, "Son tablo")}</div>
+      <div class="ileri"><button id="yeni">Yeni oyun</button></div></div>`;
+    $("#yeni").onclick = () => { history.replaceState(null, "", SITE); kapat(); giris(); };
+  }
+  const b = $("#ilerle");
+  if (b) b.onclick = async () => { b.disabled = true; try { await post(`/oda/${kod}/ilerle`, {jeton}); } catch (e) { b.disabled = false; alertYerine(e.message); } };
+}
+
+function alertYerine(m) { const p = document.createElement("p"); p.className = "hata wrap"; p.textContent = m; $("#uygulama").append(p); }
+
+function oyuncuCiz() {
+  const v = V, u = $("#uygulama"), ben = v.ben || {};
+  const ust = `<div class="wrap ust"><span>${esc(ben.ad || "")}</span><span>${(ben.puan || 0).toLocaleString("tr-TR")} puan</span></div>`;
+  if (v.durum === "lobi") {
+    u.innerHTML = ust + `<div class="wrap mesaj"><div class="buyuk">İçeridesin!</div><p class="soluk">Sunucu yarışmayı başlatınca ilk soru burada görünecek. ${v.oyuncu_sayisi} oyuncu var.</p></div>`;
+  } else if (v.durum === "soru") {
+    if (ben.cevap != null) {
+      u.innerHTML = ust + `<div class="wrap mesaj"><div class="buyuk">Cevabın alındı</div><p class="soluk">${HARF[ben.cevap]}: ${esc(v.soru.secenekler[ben.cevap])}. Diğerleri bekleniyor…</p></div>`;
+    } else {
+      u.innerHTML = ust + `<div class="wrap oyuncu"><div class="merkez"><span class="kat">${esc(v.soru.kategori)} · <span id="kalan"></span> sn</span></div>
+        <div class="soru" style="font-size:clamp(1.3rem,6vw,2rem)">${esc(v.soru.metin)}</div><div class="sure"><i></i></div>${secenekler(v.soru)}</div>`;
+      document.querySelectorAll(".secenek").forEach((b) => b.onclick = async () => {
+        document.querySelectorAll(".secenek").forEach((x) => (x.disabled = true));
+        try { await post(`/oda/${kod}/cevap`, {jeton, secim: +b.dataset.i}); } catch (e) { alertYerine(e.message); }
+      });
+      sayac();
+    }
+  } else if (v.durum === "sonuc") {
+    const dogru = ben.cevap === v.dogru;
+    u.innerHTML = ust + `<div class="wrap mesaj"><div class="buyuk ${dogru ? "iyi" : "kotu"}">${dogru ? `Doğru! +${ben.son_puan}` : ben.cevap == null ? "Süre doldu" : "Yanlış"}</div>
+      <p>Doğru cevap: <b>${esc(v.soru.secenekler[v.dogru])}</b></p><p class="soluk">${ben.siralama}. sıradasın.</p></div><div class="wrap">${yzKutu(v.yz)}</div>`;
+  } else if (v.durum === "bitti") {
+    u.innerHTML = ust + `<div class="wrap mesaj"><div class="buyuk">${ben.siralama === 1 ? "Birincisin! 🏆" : `${ben.siralama}. oldun`}</div>
+      <p class="soluk">${(ben.puan || 0).toLocaleString("tr-TR")} puan. Teşekkürler!</p><p><a href="${SITE}">Ana sayfaya dön</a></p></div>`;
+  }
+}
+
+function yonlendir() {
+  const m = location.hash.match(/^#(sun|oyna)\/([A-Z]{4})$/);
+  if (!m) return giris();
+  rol = m[1]; kod = m[2]; jeton = ss.al((rol === "sun" ? "s:" : "j:") + kod);
+  if (!jeton) { history.replaceState(null, "", SITE + (rol === "oyna" ? "?k=" + kod : "")); return giris(rol === "oyna" ? "Katılmak için adını yaz." : "Bu oda başka bir ekrandan kurulmuş."); }
+  $("#uygulama").innerHTML = `<div class="wrap mesaj"><p class="soluk">Bağlanıyor…</p></div>`;
+  baglan();
+}
+addEventListener("hashchange", yonlendir);
+yonlendir();
+</script>
+</body>
+</html>
