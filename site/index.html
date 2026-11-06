@@ -6,7 +6,7 @@
 <title>Türkiye Bilgi Yarışması</title>
 <meta name="description" content="Arkadaşlarınla, sınıfla, ailecek canlı bilgi yarışması. Bir ekran sunucu olur, herkes telefonundan katılır. Her sorudan sonra yapay zekâların o soruyu bilip bilmediğini görürsünüz.">
 <meta property="og:title" content="Türkiye'yi kim daha iyi tanıyor?">
-<meta property="og:description" content="Canlı bilgi yarışması: sen, arkadaşların ve yapay zekâ. Sorular Wikidata'dan, cevaplar doğrulanmış.">
+<meta property="og:description" content="Her hafta 10 soru: yapay zekâ kaç bildi, sen kaç bilirsin? Canlı bilgi yarışması: sen, arkadaşların ve yapay zekâ. Sorular Wikidata'dan, cevaplar doğrulanmış.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%23e4572e%22/%3E%3Ctext x=%2216%22 y=%2223%22 font-size=%2219%22 font-family=%22Arial%22 font-weight=%22900%22 text-anchor=%22middle%22 fill=%22%23fff%22%3E?%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,6 +43,22 @@ input{border:2px solid var(--cizgi);background:var(--kart);color:var(--yazi);bor
 .nasil span{color:var(--soluk);font-size:.95rem}
 footer{padding-top:46px;padding-bottom:36px;color:var(--soluk);font-size:.88rem}
 footer a{color:inherit}
+.hafta-kart{display:grid;grid-template-columns:1.5fr 1fr;gap:24px;align-items:center;margin:34px 0 0;background:var(--yazi);color:var(--zemin);border-radius:24px;padding:26px 28px}
+.hafta-kart[hidden]{display:none}
+.hafta-kart .etk{font-weight:700;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--s2)}
+.hafta-kart h2{margin:6px 0 8px;font-size:clamp(1.5rem,3.4vw,2.2rem);line-height:1.08;letter-spacing:-.02em}
+.hafta-kart .soluk{color:inherit;opacity:.75;margin:0 0 14px}
+.buton{display:inline-block;background:var(--ana);color:#fff;text-decoration:none;font-weight:700;border-radius:14px;padding:13px 24px}
+.yz-mini{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.yz-mini li{display:flex;justify-content:space-between;gap:10px;border-radius:12px;padding:9px 14px;background:rgba(127,127,127,.2);font-weight:700}
+.yz-mini li.sen{background:var(--ana);color:#fff}
+.ara-bas{margin:40px 0 0;font-size:1.3rem}
+.geri{font-weight:700;text-decoration:none}
+.tablo li.yzs{color:var(--soluk)}.tablo li.ben{color:var(--ana)}
+.tablo .rob{font-weight:600;font-size:.72rem;border:1px solid var(--cizgi);border-radius:99px;padding:0 7px;margin-left:6px;color:var(--soluk)}
+.inceleme li::before{display:none}.inceleme li{font-weight:500;font-size:.92rem;display:block}
+.inceleme small{color:var(--soluk)!important;margin:0!important}
+@media (max-width:720px){.hafta-kart{grid-template-columns:1fr}}
 /* oyun */
 .ust{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:18px;padding-bottom:18px;font-weight:700;color:var(--soluk)}
 .kodkutu{text-align:center;padding:30px 0}
@@ -114,6 +130,10 @@ function giris(hata) {
   $("#uygulama").innerHTML = `<div class="wrap giris">
     <h1>Türkiye'yi kim<br>daha iyi <em>tanıyor?</em></h1>
     <p class="lede">Arkadaşlarınla, sınıfla, ailecek. Bir ekran sunucu olur, herkes telefonundan katılır. On soru; her sorudan sonra yapay zekâların o soruyu bilip bilmediğini de görürsünüz.</p>
+    <section class="hafta-kart" id="hafta-kart"><div><div class="etk">Haftanın yarışması</div><h2>Bu hafta 10 soru. Yapay zekâ kaç bildi, sen kaç bilirsin?</h2>
+      <p id="hafta-alt" class="soluk">Her cuma 21:00'de yenilenir. Tek başına, istediğin an.</p>
+      <a class="buton" href="#hafta">Soruları çöz</a></div><ol class="yz-mini" id="yz-mini" aria-label="Yapay zekâ puanları"></ol></section>
+    <h2 class="ara-bas">Ya da arkadaşlarınla canlı oyna</h2>
     <div class="iki">
       <div class="kutu"><h2>Oyuna katıl</h2><p>Sunucu ekranındaki dört harfli kodu yaz.</p>
         <form id="katil"><input id="kod" maxlength="4" autocomplete="off" placeholder="KOD" value="${esc(q.toUpperCase())}" aria-label="Oda kodu">
@@ -127,6 +147,7 @@ function giris(hata) {
       <div><b>Yapay zekâ da yarışıyor</b><span>Her sorudan sonra on modelin o soruyu bilip bilmediği görünür. Ölçümler <a href="https://birtohum.github.io/turkce-yz-karnesi/">Türkçe yapay zekâ karnesi</a>nden.</span></div>
     </div></div>
     <footer class="wrap">Adlar ve puanlar yalnız oyun sürerken sunucunun belleğinde durur, hiçbir yere kaydedilmez. Kod: <a href="https://github.com/birtohum/bilgi-yarismasi">github.com/birtohum/bilgi-yarismasi</a> · <a href="https://birtohum.github.io/">birtohum</a></footer>`;
+  haftaKart();
   $("#katil").onsubmit = async (e) => {
     e.preventDefault();
     const k = $("#kod").value.trim().toUpperCase(), ad = $("#ad").value.trim();
@@ -240,7 +261,89 @@ function oyuncuCiz() {
   }
 }
 
+// ------------------------------------------------- Haftanın Yarışması
+const YEREL = {al: (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }, koy: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }};
+let H = null;
+const kalanGun = (iso) => { const g = Math.ceil((new Date(iso) - Date.now()) / 864e5); return g <= 1 ? "Bugün yenileniyor" : `${g} gün sonra yenileniyor`; };
+async function haftaDurum() { const r = await fetch(API + "/hafta"); if (!r.ok) throw new Error("Sunucuya ulaşılamadı."); return r.json(); }
+
+async function haftaKart() {
+  try {
+    const d = await haftaDurum();
+    const y = d.yz, ust = [y[0], y.find((m) => /Qwen3 14B/.test(m.ad)), y[y.length - 1]].filter(Boolean);
+    const m = $("#yz-mini"); if (!m) return;
+    m.innerHTML = ust.map((u) => `<li><span>${esc(u.ad)}</span><b>${u.d}/10</b></li>`).join("") + `<li class="sen"><span>Sen</span><b>?</b></li>`;
+    const b = YEREL.al("hafta:" + d.hafta);
+    if (b) { m.querySelector(".sen b").textContent = `${b.dogru}/10`; $("#hafta-kart .buton").textContent = "Sonucumu gör"; }
+    $("#hafta-alt").textContent = `${d.katilan ? d.katilan + " kişi çözdü · " : ""}${kalanGun(d.bitis)}. Tek başına, istediğin an.`;
+  } catch (e) { const k = $("#hafta-kart"); if (k) k.hidden = true; }
+}
+
+async function haftaBas(hata) {
+  kapat();
+  let d; try { d = await haftaDurum(); } catch (e) { return giris(e.message); }
+  const eski = YEREL.al("hafta:" + d.hafta);
+  if (eski) return haftaSonuc(eski, d);
+  const ad = YEREL.al("ad") || "";
+  $("#uygulama").innerHTML = `<div class="wrap ust"><a href="#" class="geri">← Ana sayfa</a><span>${d.katilan ? d.katilan + " kişi çözdü" : "Bu haftanın ilki sen ol"}</span></div>
+    <div class="wrap" style="max-width:640px"><div class="soru" style="text-align:left;margin-left:0;max-width:none">10 soru, her biri 20 saniye.</div>
+    <p class="soluk">Cevabını seçince sıradaki soru gelir, doğrusu sonda açılır. Bilemediğini boş bırakabilirsin. Haftada bir kez oynanır.</p>
+    <form id="baslat" class="kutu" style="display:grid;gap:10px"><label for="ad">Tabloda görünecek adın (istersen boş bırak)</label>
+    <input id="ad" maxlength="16" value="${esc(ad)}" placeholder="Adın"><button>Başla</button></form><p class="hata" id="h3">${esc(hata || "")}</p></div>`;
+  $("#baslat").onsubmit = async (e) => {
+    e.preventDefault(); const a = $("#ad").value.trim(); YEREL.koy("ad", a);
+    try { H = {...(await post("/hafta/basla")), ad: a, cevaplar: [], i: 0}; soruGoster(); }
+    catch (err) { $("#h3").textContent = "Sunucuya ulaşılamadı. Biraz sonra yeniden dene."; }
+  };
+}
+
+function soruGoster() {
+  clearInterval(saatId);
+  const q = H.sorular[H.i];
+  $("#uygulama").innerHTML = `<div class="wrap ust"><span>Soru ${H.i + 1}/${H.sorular.length}</span><span><b id="hk"></b> sn</span></div>
+    <div class="wrap"><div class="merkez"><span class="kat">${esc(q.kategori)}</span></div><div class="soru">${esc(q.metin)}</div><div class="sure"><i></i></div>${secenekler({secenekler: q.secenekler})}</div>`;
+  const son = performance.now() + H.soru_sure * 1000;
+  const ilerle = (c) => { clearInterval(saatId); H.cevaplar.push(c); H.i++; H.i < H.sorular.length ? soruGoster() : haftaBitir(); };
+  document.querySelectorAll(".secenek").forEach((b) => (b.onclick = () => ilerle(+b.dataset.i)));
+  const tik = () => { const k = Math.max(0, (son - performance.now()) / 1000); const i = $(".sure i"); if (i) i.style.transform = `scaleX(${k / H.soru_sure})`; const t = $("#hk"); if (t) t.textContent = Math.ceil(k); if (k <= 0) ilerle(-1); };
+  tik(); saatId = setInterval(tik, 150);
+}
+
+async function haftaBitir(ad) {
+  clearInterval(saatId);
+  $("#uygulama").innerHTML = `<div class="wrap mesaj"><p class="soluk">Puanın hesaplanıyor…</p></div>`;
+  try {
+    const r = await post("/hafta/bitir", {jeton: H.jeton, ad: ad === undefined ? H.ad : ad, cevaplar: H.cevaplar});
+    YEREL.koy("hafta:" + H.hafta, r);
+    haftaSonuc(r, await haftaDurum());
+  } catch (e) {
+    if (/adı tabloya/.test(e.message)) { H.ad = ""; YEREL.koy("ad", ""); return haftaBitir(""); }
+    $("#uygulama").innerHTML = `<div class="wrap mesaj"><p class="hata">${esc(e.message === "Failed to fetch" ? "Sunucuya ulaşılamadı." : e.message)}</p><p><a href="#">Ana sayfa</a></p></div>`;
+  }
+}
+
+function haftaSonuc(r, d) {
+  const adim = YEREL.al("ad") || "";
+  const meta = d.yz.filter((m) => /^Muse/.test(m.ad)), metaEn = Math.max(...meta.map((m) => m.d));
+  const yzSatir = [{ad: `Meta'nın ${meta.length} modeli`, d: metaEn, yz: true}, ...d.yz.filter((m) => !/^Muse/.test(m.ad))];
+  const satir = [...d.tablo.map((x) => ({...x, yz: false})), ...yzSatir].sort((a, b) => b.d - a.d || (a.yz ? 1 : 0) - (b.yz ? 1 : 0)).slice(0, 20);
+  const metin = `Türkiye bilgi yarışmasında bu hafta ${r.dogru}/${r.toplam} yaptım; ${r.yz.length} yapay zekâdan ${r.yz_gecti} tanesini geçtim. Sen kaç yaparsın?`;
+  $("#uygulama").innerHTML = `<div class="wrap ust"><a href="#" class="geri">← Ana sayfa</a><span>${kalanGun(d.bitis)}</span></div>
+    <div class="wrap"><div class="mesaj" style="padding-top:10px"><div class="buyuk">${r.dogru}/${r.toplam}</div>
+    <p>${r.yz.length} yapay zekâ modelinden <b>${r.yz_gecti}</b> tanesini geçtin.${r.katilan > 1 ? ` ${r.katilan} kişi içinde ${r.sira}. sıradasın.` : ""}</p>
+    <button id="paylas">Sonucu paylaş</button> <span class="soluk" id="paylasildi"></span></div>
+    <div class="alt"><div class="tablo"><h3>Bu haftanın tablosu</h3><ol>${satir.map((x) => `<li class="${x.yz ? "yzs" : x.ad === adim && x.d === r.dogru ? "ben" : ""}">${esc(x.ad)}${x.yz ? ' <small class="rob">YZ</small>' : ""}<b>${x.d}/10</b></li>`).join("")}</ol></div>
+    <div class="tablo"><h3>Sorular ve doğruları</h3><ol class="inceleme">${r.inceleme.map((q) => `<li class="${q.senin === q.dogru ? "d" : "y"}"><div><b style="margin:0">${esc(q.metin)}</b><br>${q.senin === q.dogru ? "✓" : "✗"} ${esc(q.secenekler[q.dogru])}${q.senin !== q.dogru && q.senin >= 0 ? ` <span class="soluk">(senin cevabın: ${esc(q.secenekler[q.senin])})</span>` : ""}<br><small class="soluk">Meta modelleri ${q.yz.meta_bildi}/${q.yz.meta_toplam}, küçük modeller ${q.yz.yerel.filter((m) => m.bildi).length}/${q.yz.yerel.length} bildi</small></div></li>`).join("")}</ol></div></div>
+    <p class="soluk" style="font-size:.88rem">Yapay zekâ puanları canlı değil, <a href="https://birtohum.github.io/turkce-yz-karnesi/">Türkçe yapay zekâ karnesi</a>ndeki ölçümlerden.</p></div>`;
+  $("#paylas").onclick = async () => {
+    const url = SITE + "#hafta";
+    try { if (navigator.share) await navigator.share({text: metin, url}); else { await navigator.clipboard.writeText(metin + " " + url); $("#paylasildi").textContent = "Kopyalandı."; } } catch (e) {}
+  };
+  scrollTo(0, 0);
+}
+
 function yonlendir() {
+  if (location.hash === "#hafta") return haftaBas();
   const m = location.hash.match(/^#(sun|oyna)\/([A-Z]{4})$/);
   if (!m) return giris();
   rol = m[1]; kod = m[2]; jeton = ss.al((rol === "sun" ? "s:" : "j:") + kod);

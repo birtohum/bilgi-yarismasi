@@ -14,6 +14,7 @@ CPUQuota=50%
 TasksMax=600
 NoNewPrivileges=true
 ProtectSystem=strict
+ReadWritePaths=/opt/bilgi-yarismasi/kayitlar
 PrivateTmp=true
 
 [Install]

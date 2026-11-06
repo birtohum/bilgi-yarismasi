@@ -4,6 +4,10 @@
 
 Arkadaşlarla, sınıfta ya da ailecek oynanan canlı bilgi yarışması. Bir ekran (projeksiyon, televizyon) odayı kurar, herkes telefonundan dört harfli kodla katılır. On soru, her biri 20 saniye; doğru cevap 500 puan, hıza göre 500'e kadar fazlası. Her sorudan sonra on yapay zekâ modelinin o soruyu bilip bilmediği gösterilir.
 
+## Haftanın Yarışması
+
+Her cuma 21:00'de (TR) 10 yeni soru açılır; herkes bir hafta boyunca istediği an, tek başına çözer. Sorular haftanın tarihinden deterministik seçilir, puan ve süre sunucuda hesaplanır, doğru cevaplar bitene kadar gönderilmez. Tabloda insanların yanında on yapay zekâ modeli de durur; puanları karnedeki gerçek ölçümlerden gelir, bu yüzden tablo hiç boş kalmaz. Kayıtta yalnız ad, doğru sayısı ve süre tutulur; kötü söz ve bağlantı içeren adlar reddedilir (`sunucu/haftalik.py`).
+
 ## Sorular
 
 [Türkçe yapay zekâ karnesi](https://birtohum.github.io/turkce-yz-karnesi/)'nin Wikidata'dan otomatik üretilmiş açık sorularından (`araclar/sorular.py`): il nüfusu, ilçenin ili, plaka kodu, şehir rakımı, gölün ili, ünlülerin doğum yılı. Karnede “tartışmalı” işaretlenen, yani Wikidata cevabının şüpheli olduğu 11 soru havuzdan çıkarıldı; kalan 1.136 soru. Her oyunda kategorileri dengeli 10 soru seçilir, seçeneklerin sırası karıştırılır. Modellerin bilip bilmediği karnenin ölçümlerinden gelir (aynı soru, iki farklı ifade).

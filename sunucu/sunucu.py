@@ -6,6 +6,7 @@ Caddy önde HTTPS'i yapar, /yarisma/* isteklerini 127.0.0.1:8792'ye iletir.
   POST /oda/KOD/ilerle {jeton}     (yalnız sunucu: başla / cevapları kapat / sonraki)
   POST /oda/KOD/cevap  {jeton, secim}
   GET  /oda/KOD/akis?j=JETON       text/event-stream, her değişiklikte durum
+  GET  /hafta, POST /hafta/basla, POST /hafta/bitir {jeton, ad, cevaplar}   Haftanın Yarışması
 Adlar ve puanlar yalnız bellekte durur; oda 3 saat hareketsiz kalınca silinir.
 """
 import json
@@ -15,6 +16,7 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlsplit
 
+import haftalik
 import oyun
 
 PORT = int(os.environ.get("YARISMA_PORT", "8792"))
@@ -68,6 +70,11 @@ class Isleyici(BaseHTTPRequestHandler):
         parca = urlsplit(self.path).path.strip("/").split("/")
         try:
             g = self._govde()
+            if parca == ["hafta", "basla"]:
+                return self._gonder(200, haftalik.basla())
+            if parca == ["hafta", "bitir"]:
+                ip = (self.headers.get("X-Forwarded-For") or self.client_address[0]).split(",")[0].strip()
+                return self._gonder(200, haftalik.bitir(g.get("jeton"), g.get("ad"), g.get("cevaplar"), ip))
             if parca == ["oda"]:
                 ip = (self.headers.get("X-Forwarded-For") or self.client_address[0]).split(",")[0].strip()
                 simdi = time.time()
@@ -99,6 +106,8 @@ class Isleyici(BaseHTTPRequestHandler):
         parca = u.path.strip("/").split("/")
         if parca == ["durum"] or parca == [""]:
             return self._gonder(200, {"oda": len(SALON.odalar), "akis": _akis["n"]})
+        if parca == ["hafta"]:
+            return self._gonder(200, haftalik.durum())
         if len(parca) == 2 and parca[0] == "oda":
             return self._gonder(200, {"var": True}) if SALON.bul(parca[1]) else self._gonder(404, {"hata": "Bu kodla bir oda yok."})
         if len(parca) == 3 and parca[0] == "oda" and parca[2] == "akis":
